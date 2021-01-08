@@ -37,36 +37,39 @@ def reset_timer():
 
 
 def start_timer():
-    """starts the rounds count and sets the timer_time and the header accordingly"""
+    """starts the rounds count and sets the timer time and header accordingly"""
     global rounds
     rounds += 1
-    if rounds == 8:
-        timer_time = LONG_BREAK_MIN
-        rounds = 0
+    if rounds == 9:
+        reset_timer()
+        start_timer()
+        return
+    elif rounds == 8:
+        timer_minutes = LONG_BREAK_MIN
     elif rounds % 2 == 0:
-        timer_time = SHORT_BREAK_MIN
+        timer_minutes = SHORT_BREAK_MIN
         show_checkmark()
     else:
-        timer_time = WORK_MIN
-    countdown(timer_time * 60)
-    adjust_header(timer_time)
+        timer_minutes = WORK_MIN
+    countdown(timer_minutes * 60)
+    adjust_header(timer_minutes)
 
 
-def countdown(minutes):
+def countdown(total_seconds):
     """loops every second, refreshing the timer display with the current minutes and seconds"""
     global rounds
-    mt = floor(minutes / 60)
-    sc = floor(minutes % 60)
-    if mt < 10:
-        mt = f'0{mt}'
-    if sc < 10:
-        sc = f'0{sc}'
-    clock = f'{mt}:{sc}'
+    minutes = floor(total_seconds / 60)
+    seconds = floor(total_seconds % 60)
+    if minutes < 10:
+        minutes = f'0{minutes}'
+    if seconds < 10:
+        seconds = f'0{seconds}'
+    clock = f'{minutes}:{seconds}'
     canvas.itemconfig(timer_text, text=clock)
-    if minutes > 0:
+    if total_seconds > 0:
         global current_timer
-        current_timer = window.after(1000, countdown, minutes - 1)
-    elif minutes == 0 and 0 < rounds < 8:
+        current_timer = window.after(1000, countdown, total_seconds - 1)
+    elif total_seconds == 0 and 0 < rounds < 8:
         start_timer()
 
 
